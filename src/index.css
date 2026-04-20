@@ -1,0 +1,36 @@
+:root {
+  --brand: #63b3ed;
+  --brand-dark: #2563eb;
+  --bg: #ffffff;
+  --surface: #f7fafc;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --text-muted: #4a5568;
+  --danger: #e53e3e;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100svh;
+}
+
+body {
+  overscroll-behavior-y: contain;
+}
+
+button {
+  font-family: inherit;
+}

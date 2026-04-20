@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Granite/AppsInToss build artifacts
+.granite/
+*.ait
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>점심먹Go — 데모 시드</title>
+</head>
+<body>
+  <script>
+    // AppsInToss 콘솔 업로드용 스크린샷을 찍을 때 shortlist에 데모 후보를 심고
+    // 원래 라우트로 리다이렉트한다. localhost 개발 환경에서만 쓰고, 프로덕션 빌드엔
+    // public/에 포함된 채 나가더라도 기능 동작엔 영향이 없다(직접 URL을 쳐야만 실행됨).
+    (() => {
+      const params = new URLSearchParams(location.search);
+      const target = params.get('to') || '/';
+      const scenario = params.get('scenario') || 'home';
+      const entries = {
+        home: [
+          { label: '국밥', source: 'roulette' },
+          { label: '스시조 강남점', source: 'nearby' },
+          { label: '돈까스', source: 'manual' },
+        ],
+        vote: [
+          { label: '국밥', source: 'roulette' },
+          { label: '돈까스', source: 'manual' },
+          { label: '스시조 강남점', source: 'nearby' },
+        ],
+        roulette: [{ label: '제육덮밥', source: 'roulette' }],
+        empty: [],
+      }[scenario] || [];
+      try {
+        localStorage.setItem('jumsim-meokgo.shortlist.v1', JSON.stringify(entries));
+      } catch (e) {
+        // ignore
+      }
+      location.replace(target);
+    })();
+  </script>
+  <noscript>JavaScript가 필요합니다.</noscript>
+</body>
+</html>

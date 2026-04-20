@@ -1,3 +1,4 @@
+import { Button } from '@toss/tds-mobile';
 import { doc, increment, onSnapshot, updateDoc } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -17,7 +18,11 @@ export default function VoteSessionScreen() {
   const nav = useNavigate();
   const { sessionId = '' } = useParams();
   const [data, setData] = useState<VoteDoc | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() =>
+    isFirebaseConfigured
+      ? null
+      : 'Firebase 웹앱 설정이 필요해요. .env.local에 VITE_FIREBASE_* 값을 채워주세요.',
+  );
   const [voted, setVoted] = useState<string | null>(() =>
     typeof window === 'undefined' ? null : localStorage.getItem(VOTED_LS(sessionId)),
   );
@@ -25,12 +30,7 @@ export default function VoteSessionScreen() {
   const [flash, setFlash] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isFirebaseConfigured) {
-      setError(
-        'Firebase 웹앱 설정이 필요해요. .env.local에 VITE_FIREBASE_* 값을 채워주세요.',
-      );
-      return;
-    }
+    if (!isFirebaseConfigured) return;
     if (!sessionId) return;
     const ref = doc(db, 'votes', sessionId);
     const unsub = onSnapshot(
@@ -88,12 +88,19 @@ export default function VoteSessionScreen() {
     return (
       <main className="screen">
         <div className="screen-header">
-          <button type="button" className="back" onClick={() => nav('/')}>
+          <button
+            type="button"
+            className="back"
+            onClick={() => nav('/')}
+            aria-label="홈으로"
+          >
             ←
           </button>
           <h1>팀 투표</h1>
         </div>
-        <div className="banner">{error}</div>
+        <div className="banner" role="alert">
+          {error}
+        </div>
       </main>
     );
   }
@@ -101,7 +108,7 @@ export default function VoteSessionScreen() {
   if (!data) {
     return (
       <main className="screen">
-        <div className="empty">불러오는 중…</div>
+        <div className="empty" aria-live="polite">불러오는 중…</div>
       </main>
     );
   }
@@ -109,7 +116,12 @@ export default function VoteSessionScreen() {
   return (
     <main className="screen">
       <div className="screen-header">
-        <button type="button" className="back" onClick={() => nav('/')}>
+        <button
+          type="button"
+          className="back"
+          onClick={() => nav('/')}
+          aria-label="홈으로"
+        >
           ←
         </button>
         <h1>{data.title}</h1>
@@ -123,7 +135,7 @@ export default function VoteSessionScreen() {
 
       {flash && <div className="banner">{flash}</div>}
 
-      <div className="stack">
+      <div className="stack" role="radiogroup" aria-label="투표 후보">
         {data.candidates.map((c) => {
           const count = data.counts[c] ?? 0;
           const pct = total === 0 ? 0 : Math.round((count / total) * 100);
@@ -131,6 +143,8 @@ export default function VoteSessionScreen() {
             <button
               key={c}
               type="button"
+              role="radio"
+              aria-checked={voted === c}
               className={`vote-option ${voted === c ? 'selected' : ''}`}
               onClick={() => vote(c)}
               disabled={Boolean(voted)}
@@ -145,15 +159,18 @@ export default function VoteSessionScreen() {
         })}
       </div>
 
-      <button
-        type="button"
-        className="btn btn-ghost"
-        style={{ marginTop: 20 }}
-        onClick={share}
-        disabled={sharing}
-      >
-        🔗 투표 링크 공유하기
-      </button>
+      <div style={{ marginTop: 20 }}>
+        <Button
+          display="full"
+          size="large"
+          variant="weak"
+          color="primary"
+          onClick={share}
+          loading={sharing}
+        >
+          🔗 투표 링크 공유하기
+        </Button>
+      </div>
     </main>
   );
 }

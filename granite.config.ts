@@ -5,7 +5,7 @@ export default defineConfig({
   brand: {
     displayName: '점심먹Go',
     primaryColor: '#63B3ED',
-    icon: '',
+    icon: 'public/icon-1024.png',
   },
   web: {
     host: 'localhost',

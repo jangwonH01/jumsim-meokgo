@@ -1,3 +1,4 @@
+import { Button, TextField } from '@toss/tds-mobile';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,14 +35,10 @@ function loadItems(): string[] {
 
 export default function RouletteScreen() {
   const nav = useNavigate();
-  const [items, setItems] = useState<string[]>(DEFAULTS);
+  const [items, setItems] = useState<string[]>(() => loadItems());
   const [pick, setPick] = useState<string | null>(null);
   const [spinning, setSpinning] = useState(false);
   const [draft, setDraft] = useState('');
-
-  useEffect(() => {
-    setItems(loadItems());
-  }, []);
 
   useEffect(() => {
     localStorage.setItem(LS_KEY, JSON.stringify(items));
@@ -85,23 +82,32 @@ export default function RouletteScreen() {
   return (
     <main className="screen">
       <div className="screen-header">
-        <button type="button" className="back" onClick={() => nav(-1)}>
+        <button
+          type="button"
+          className="back"
+          onClick={() => nav(-1)}
+          aria-label="뒤로 가기"
+        >
           ←
         </button>
         <h1>랜덤 룰렛</h1>
       </div>
 
-      <div className="result-dish">{pick ?? '메뉴를 뽑아주세요'}</div>
+      <div className="result-dish" aria-live="polite" aria-atomic="true">
+        {pick ?? '메뉴를 뽑아주세요'}
+      </div>
 
       <div className="stack">
-        <button
-          type="button"
-          className="btn"
+        <Button
+          display="full"
+          size="xlarge"
+          color="primary"
           onClick={spin}
-          disabled={spinning || items.length === 0}
+          disabled={items.length === 0}
+          loading={spinning}
         >
-          {spinning ? '돌리는 중…' : '🎲 룰렛 돌리기'}
-        </button>
+          {spinning ? '돌리는 중' : '🎲 룰렛 돌리기'}
+        </Button>
 
         <div>
           <p className="card-title" style={{ margin: '18px 0 10px' }}>
@@ -111,30 +117,53 @@ export default function RouletteScreen() {
             {items.map((it) => (
               <span className="tag" key={it}>
                 {it}
-                <button type="button" onClick={() => removeItem(it)} aria-label="삭제">
+                <button
+                  type="button"
+                  onClick={() => removeItem(it)}
+                  aria-label={`${it} 삭제`}
+                >
                   ×
                 </button>
               </span>
             ))}
+            {items.length === 0 && (
+              <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                메뉴를 추가하거나 기본 리스트로 초기화해주세요
+              </span>
+            )}
           </div>
         </div>
 
         <div className="row">
-          <input
-            className="input"
-            placeholder="새 메뉴 추가"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addItem()}
-          />
-          <button type="button" className="btn btn-ghost" onClick={addItem} style={{ width: 'auto', padding: '0 18px' }}>
+          <div style={{ flex: 1 }}>
+            <TextField
+              variant="box"
+              placeholder="새 메뉴 추가"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addItem()}
+            />
+          </div>
+          <Button
+            size="large"
+            variant="weak"
+            color="primary"
+            onClick={addItem}
+            disabled={!draft.trim()}
+          >
             추가
-          </button>
+          </Button>
         </div>
 
-        <button type="button" className="btn btn-ghost" onClick={resetDefaults}>
+        <Button
+          display="full"
+          size="large"
+          variant="weak"
+          color="dark"
+          onClick={resetDefaults}
+        >
           기본 리스트로 초기화
-        </button>
+        </Button>
       </div>
     </main>
   );

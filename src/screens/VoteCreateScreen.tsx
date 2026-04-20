@@ -1,3 +1,4 @@
+import { Button, TextField } from '@toss/tds-mobile';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -57,22 +58,32 @@ export default function VoteCreateScreen() {
   return (
     <main className="screen">
       <div className="screen-header">
-        <button type="button" className="back" onClick={() => nav(-1)}>
+        <button
+          type="button"
+          className="back"
+          onClick={() => nav(-1)}
+          aria-label="뒤로 가기"
+        >
           ←
         </button>
         <h1>팀 투표 만들기</h1>
       </div>
 
-      {error && <div className="banner">{error}</div>}
+      {error && (
+        <div className="banner" role="alert">
+          {error}
+        </div>
+      )}
 
       <div className="stack">
         <div>
           <p className="card-title" style={{ margin: '0 0 8px' }}>제목</p>
-          <input
-            className="input"
+          <TextField
+            variant="box"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="오늘 점심"
+            maxLength={30}
           />
         </div>
 
@@ -84,7 +95,11 @@ export default function VoteCreateScreen() {
             {candidates.map((c) => (
               <span className="tag" key={c}>
                 {c}
-                <button type="button" onClick={() => removeCandidate(c)}>
+                <button
+                  type="button"
+                  onClick={() => removeCandidate(c)}
+                  aria-label={`${c} 삭제`}
+                >
                   ×
                 </button>
               </span>
@@ -96,32 +111,38 @@ export default function VoteCreateScreen() {
             )}
           </div>
           <div className="row">
-            <input
-              className="input"
-              placeholder="후보 추가 (Enter)"
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addCandidate()}
-            />
-            <button
-              type="button"
-              className="btn btn-ghost"
+            <div style={{ flex: 1 }}>
+              <TextField
+                variant="box"
+                placeholder="후보 추가 (Enter)"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addCandidate()}
+                maxLength={20}
+              />
+            </div>
+            <Button
+              size="large"
+              variant="weak"
+              color="primary"
               onClick={addCandidate}
-              style={{ width: 'auto', padding: '0 18px' }}
+              disabled={!draft.trim()}
             >
               추가
-            </button>
+            </Button>
           </div>
         </div>
 
-        <button
-          type="button"
-          className="btn"
-          disabled={creating || candidates.length < 2}
+        <Button
+          display="full"
+          size="xlarge"
+          color="primary"
+          disabled={candidates.length < 2}
+          loading={creating}
           onClick={create}
         >
-          {creating ? '만드는 중…' : '투표 만들고 공유하기'}
-        </button>
+          {creating ? '만드는 중' : '투표 만들고 공유하기'}
+        </Button>
       </div>
     </main>
   );

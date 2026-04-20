@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { isKakaoConfigured, searchNearbyRestaurants, type KakaoRestaurant } from '../lib/kakao';
 import { getCurrentCoords } from '../lib/location';
+import { addToShortlist } from '../lib/shortlist';
+import { useShortlist } from '../lib/useShortlist';
 
 type LoadState =
   | { kind: 'idle' }
@@ -13,8 +15,10 @@ type LoadState =
 
 export default function NearbyScreen() {
   const nav = useNavigate();
+  const shortlist = useShortlist();
   const [state, setState] = useState<LoadState>({ kind: 'idle' });
   const [radius, setRadius] = useState(500);
+  const [toast, setToast] = useState<string | null>(null);
 
   const load = async () => {
     if (!isKakaoConfigured) {
@@ -43,6 +47,23 @@ export default function NearbyScreen() {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 1500);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  const pickedLabels = new Set(shortlist.map((e) => e.label));
+
+  const addRestaurant = (r: KakaoRestaurant) => {
+    const added = addToShortlist({
+      label: r.placeName,
+      source: 'nearby',
+      placeUrl: r.placeUrl,
+    });
+    setToast(added ? `후보에 담았어요 · ${r.placeName}` : '이미 담긴 후보예요');
+  };
 
   return (
     <main className="screen">
@@ -79,6 +100,21 @@ export default function NearbyScreen() {
         ))}
       </div>
 
+      {shortlist.length > 0 && (
+        <div className="shortlist-strip" aria-live="polite">
+          <span className="shortlist-strip-label">담은 후보 {shortlist.length}</span>
+          {shortlist.length >= 2 && (
+            <button
+              type="button"
+              className="shortlist-strip-cta"
+              onClick={() => nav('/vote')}
+            >
+              투표 시작 →
+            </button>
+          )}
+        </div>
+      )}
+
       {state.kind === 'loading' && (
         <div className="empty" aria-live="polite">
           {state.message}
@@ -94,20 +130,39 @@ export default function NearbyScreen() {
       )}
       {state.kind === 'ok' && state.restaurants.length > 0 && (
         <div className="stack">
-          {state.restaurants.map((r) => (
-            <a
-              key={r.id}
-              className="restaurant"
-              href={r.placeUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <p className="restaurant-name">{r.placeName}</p>
-              <p className="restaurant-meta">
-                {r.categoryName} · {r.distanceMeters}m · {r.address || ''}
-              </p>
-            </a>
-          ))}
+          {state.restaurants.map((r) => {
+            const picked = pickedLabels.has(r.placeName);
+            return (
+              <div key={r.id} className="restaurant restaurant-row">
+                <a
+                  href={r.placeUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="restaurant-link"
+                >
+                  <p className="restaurant-name">{r.placeName}</p>
+                  <p className="restaurant-meta">
+                    {r.categoryName} · {r.distanceMeters}m · {r.address || ''}
+                  </p>
+                </a>
+                <button
+                  type="button"
+                  className={`add-chip${picked ? ' add-chip-done' : ''}`}
+                  onClick={() => addRestaurant(r)}
+                  disabled={picked}
+                  aria-label={picked ? `${r.placeName} 이미 담김` : `${r.placeName} 후보에 담기`}
+                >
+                  {picked ? '담김' : '+ 담기'}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {toast && (
+        <div className="toast" role="status" aria-live="polite">
+          {toast}
         </div>
       )}
 

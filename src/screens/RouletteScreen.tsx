@@ -2,6 +2,9 @@ import { Button, TextField } from '@toss/tds-mobile';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { addToShortlist, isInShortlist } from '../lib/shortlist';
+import { useShortlist } from '../lib/useShortlist';
+
 const DEFAULTS = [
   '김치찌개',
   '된장찌개',
@@ -35,14 +38,22 @@ function loadItems(): string[] {
 
 export default function RouletteScreen() {
   const nav = useNavigate();
+  const shortlist = useShortlist();
   const [items, setItems] = useState<string[]>(() => loadItems());
   const [pick, setPick] = useState<string | null>(null);
   const [spinning, setSpinning] = useState(false);
   const [draft, setDraft] = useState('');
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem(LS_KEY, JSON.stringify(items));
   }, [items]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 1500);
+    return () => clearTimeout(id);
+  }, [toast]);
 
   const spin = () => {
     if (items.length === 0) return;
@@ -79,6 +90,14 @@ export default function RouletteScreen() {
     setPick(null);
   };
 
+  const saveToShortlist = () => {
+    if (!pick) return;
+    const added = addToShortlist({ label: pick, source: 'roulette' });
+    setToast(added ? `후보에 담았어요 · ${pick}` : '이미 담긴 후보예요');
+  };
+
+  const pickInShortlist = pick ? isInShortlist(pick) : false;
+
   return (
     <main className="screen">
       <div className="screen-header">
@@ -96,6 +115,53 @@ export default function RouletteScreen() {
       <div className="result-dish" aria-live="polite" aria-atomic="true">
         {pick ?? '메뉴를 뽑아주세요'}
       </div>
+
+      {pick && !spinning && (
+        <div className="row" style={{ marginBottom: 16 }}>
+          <div style={{ flex: 1 }}>
+            {pickInShortlist ? (
+              <Button
+                display="full"
+                size="large"
+                color="primary"
+                variant="weak"
+                onClick={saveToShortlist}
+                disabled
+              >
+                담김
+              </Button>
+            ) : (
+              <Button
+                display="full"
+                size="large"
+                color="primary"
+                onClick={saveToShortlist}
+              >
+                + 후보에 담기
+              </Button>
+            )}
+          </div>
+          {shortlist.length >= 2 && (
+            <div style={{ flex: 1 }}>
+              <Button
+                display="full"
+                size="large"
+                color="primary"
+                variant="weak"
+                onClick={() => nav('/vote')}
+              >
+                투표 {shortlist.length}개 시작
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {toast && (
+        <div className="toast" role="status" aria-live="polite">
+          {toast}
+        </div>
+      )}
 
       <div className="stack">
         <Button

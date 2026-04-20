@@ -279,3 +279,127 @@
   line-height: 1.5;
   margin-bottom: 16px;
 }
+
+.info-banner {
+  padding: 10px 14px;
+  background: #ebf5ff;
+  border: 1px solid #bee3f8;
+  border-radius: 12px;
+  color: var(--brand-dark);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* 오늘의 후보 (홈에서 표시) */
+.shortlist-card {
+  background: linear-gradient(180deg, #ebf5ff 0%, #f7fbff 100%);
+  border: 1px solid #bee3f8;
+  border-radius: 18px;
+  padding: 16px;
+  margin: 6px 0 18px;
+}
+
+.shortlist-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.shortlist-clear {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+/* 근처 화면 상단 후보 요약 스트립 */
+.shortlist-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: #ebf5ff;
+  border: 1px solid #bee3f8;
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--brand-dark);
+}
+
+.shortlist-strip-label {
+  font-weight: 700;
+}
+
+.shortlist-strip-cta {
+  background: var(--brand);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 근처 카드 좌측 링크 + 우측 담기 버튼 레이아웃 */
+.restaurant-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.restaurant-link {
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.add-chip {
+  flex-shrink: 0;
+  background: var(--brand);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.add-chip-done,
+.add-chip:disabled {
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+/* Floating toast feedback */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  animation: toast-in 0.18s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}

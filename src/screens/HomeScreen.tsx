@@ -1,8 +1,12 @@
 import { Button } from '@toss/tds-mobile';
 import { useNavigate } from 'react-router-dom';
 
+import { clearShortlist, removeFromShortlist } from '../lib/shortlist';
+import { useShortlist } from '../lib/useShortlist';
+
 export default function HomeScreen() {
   const nav = useNavigate();
+  const shortlist = useShortlist();
 
   return (
     <main className="screen">
@@ -14,6 +18,54 @@ export default function HomeScreen() {
         </p>
       </div>
 
+      {shortlist.length > 0 && (
+        <section
+          className="shortlist-card"
+          aria-label={`오늘의 후보 ${shortlist.length}개`}
+        >
+          <div className="shortlist-head">
+            <p className="card-title" style={{ margin: 0 }}>
+              🍱 오늘의 후보 ({shortlist.length})
+            </p>
+            <button
+              type="button"
+              className="shortlist-clear"
+              onClick={() => clearShortlist()}
+              aria-label="후보 모두 비우기"
+            >
+              비우기
+            </button>
+          </div>
+          <div className="tag-row" style={{ marginTop: 10 }}>
+            {shortlist.map((e) => (
+              <span className="tag" key={e.label}>
+                {e.label}
+                <button
+                  type="button"
+                  onClick={() => removeFromShortlist(e.label)}
+                  aria-label={`${e.label} 제거`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <Button
+              display="full"
+              size="large"
+              color="primary"
+              disabled={shortlist.length < 2}
+              onClick={() => nav('/vote')}
+            >
+              {shortlist.length < 2
+                ? '후보 2개 이상이면 투표 시작'
+                : `이 ${shortlist.length}개로 팀 투표 시작`}
+            </Button>
+          </div>
+        </section>
+      )}
+
       <div className="stack">
         <button
           type="button"
@@ -24,7 +76,7 @@ export default function HomeScreen() {
           <span className="card-emoji" aria-hidden="true">🎲</span>
           <div>
             <p className="card-title">랜덤 룰렛</p>
-            <p className="card-desc">메뉴 고르기 귀찮을 때 한 번 돌려보기</p>
+            <p className="card-desc">메뉴 뽑고 바로 후보에 담기</p>
           </div>
         </button>
 
@@ -37,7 +89,7 @@ export default function HomeScreen() {
           <span className="card-emoji" aria-hidden="true">📍</span>
           <div>
             <p className="card-title">근처 식당 찾기</p>
-            <p className="card-desc">내 위치 500m 내 식당을 추천해드려요</p>
+            <p className="card-desc">내 위치 500m 식당을 후보로 담아요</p>
           </div>
         </button>
 
@@ -50,21 +102,23 @@ export default function HomeScreen() {
           <span className="card-emoji" aria-hidden="true">👥</span>
           <div>
             <p className="card-title">팀 투표 만들기</p>
-            <p className="card-desc">후보만 넣으면 링크로 공유해 바로 투표</p>
+            <p className="card-desc">담아둔 후보로 링크 공유 투표</p>
           </div>
         </button>
 
-        <div style={{ marginTop: 8 }}>
-          <Button
-            display="full"
-            size="large"
-            variant="weak"
-            color="primary"
-            onClick={() => nav('/roulette')}
-          >
-            바로 뽑기
-          </Button>
-        </div>
+        {shortlist.length === 0 && (
+          <div style={{ marginTop: 8 }}>
+            <Button
+              display="full"
+              size="large"
+              variant="weak"
+              color="primary"
+              onClick={() => nav('/roulette')}
+            >
+              바로 뽑기
+            </Button>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { db, isFirebaseConfigured } from '../lib/firebase';
-import { shareMessage } from '../lib/share';
+import { buildAppShareLink, shareMessage } from '../lib/share';
 
 interface VoteDoc {
   title: string;
@@ -69,9 +69,16 @@ export default function VoteSessionScreen() {
   const share = async () => {
     setSharing(true);
     try {
-      const url = `${window.location.origin}/vote/${sessionId}`;
+      // 1순위: getTossShareLink — 받는 사람이 토스 앱에서 바로 미니앱 + 세션으로 진입
+      // 2순위: dev / sandbox / 토스 외 환경 — 현재 URL을 그대로 공유 (테스트용)
+      let shareUrl: string;
+      try {
+        shareUrl = await buildAppShareLink(`/vote/${sessionId}`);
+      } catch {
+        shareUrl = `${window.location.origin}/vote/${sessionId}`;
+      }
       const result = await shareMessage(
-        `[점심먹Go] ${data?.title ?? '점심 투표'}\n${url}`,
+        `[점심먹Go] ${data?.title ?? '점심 투표'}\n${shareUrl}`,
       );
       setFlash(result === 'copied' ? '링크를 복사했어요' : '공유 완료');
       setTimeout(() => setFlash(null), 2000);

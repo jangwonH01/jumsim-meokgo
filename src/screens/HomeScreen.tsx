@@ -1,12 +1,21 @@
 import { Button } from '@toss/tds-mobile';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { clearShortlist, removeFromShortlist } from '../lib/shortlist';
+import { useAnonymousKey } from '../lib/useAnonymousKey';
 import { useShortlist } from '../lib/useShortlist';
 
 export default function HomeScreen() {
   const nav = useNavigate();
   const shortlist = useShortlist();
+  // 비게임 출시 가이드 — 유저 식별키 초기화 (향후 투표 이력/북마크 연결용)
+  const { key: anonymousKey } = useAnonymousKey();
+  useEffect(() => {
+    if (anonymousKey) {
+      console.log('[jumsim-meokgo] anonymousKey acquired:', anonymousKey);
+    }
+  }, [anonymousKey]);
 
   return (
     <main className="screen">

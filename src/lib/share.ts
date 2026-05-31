@@ -11,7 +11,7 @@ import { getTossShareLink, share as aitShare } from '@apps-in-toss/web-framework
  */
 export async function buildAppShareLink(path: string): Promise<string> {
   const normalized = path.startsWith('/') ? path : `/${path}`;
-  const internal = `intoss://jumsim-meokgo${normalized}`;
+  const internal = `intoss://jumsim-mukgo${normalized}`;
   return getTossShareLink(internal);
 }
 

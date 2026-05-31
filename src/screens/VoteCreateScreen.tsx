@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { db, isFirebaseConfigured } from '../lib/firebase';
 import { clearShortlist, getShortlist } from '../lib/shortlist';
+import { DURATION_OPTIONS } from '../lib/voteEngine';
 
 export default function VoteCreateScreen() {
   const nav = useNavigate();
@@ -15,6 +16,7 @@ export default function VoteCreateScreen() {
   );
   const [prefilledCount] = useState<number>(() => getShortlist().length);
   const [draft, setDraft] = useState('');
+  const [durationMinutes, setDurationMinutes] = useState<number>(15); // 기본 15분
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,11 +54,16 @@ export default function VoteCreateScreen() {
     setCreating(true);
     setError(null);
     try {
+      const expiresAt = Date.now() + durationMinutes * 60 * 1000;
       const docRef = await addDoc(collection(db, 'votes'), {
         title: title.trim() || '오늘 점심',
         candidates,
         counts: Object.fromEntries(candidates.map((c) => [c, 0])),
         createdAt: serverTimestamp(),
+        // v1.1 — 자동 종료/결선 지원
+        status: 'voting',
+        expiresAt,
+        durationMinutes,
       });
       // 투표가 성사됐으니 shortlist는 비운다 — 다음 결정으로 이월되지 않게.
       clearShortlist();
@@ -149,6 +156,37 @@ export default function VoteCreateScreen() {
             >
               추가
             </Button>
+          </div>
+        </div>
+
+        <div>
+          <p className="card-title" style={{ margin: '0 0 8px' }}>
+            투표 시간
+          </p>
+          <p
+            style={{
+              margin: '0 0 10px',
+              fontSize: 12,
+              color: 'var(--text-muted)',
+            }}
+          >
+            시간이 지나면 자동으로 종료돼요. 동률일 경우 결선 투표 또는 룰렛으로 결정해요.
+          </p>
+          <div className="tag-row">
+            {DURATION_OPTIONS.map((opt) => {
+              const active = durationMinutes === opt.minutes;
+              return (
+                <button
+                  key={opt.minutes}
+                  type="button"
+                  className={`duration-chip${active ? ' duration-chip-active' : ''}`}
+                  onClick={() => setDurationMinutes(opt.minutes)}
+                  aria-pressed={active}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 

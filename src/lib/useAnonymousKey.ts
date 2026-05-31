@@ -36,11 +36,11 @@ export function useAnonymousKey(): AnonymousKeyState {
         }
 
         if (typeof result === 'string') {
-          console.warn('[jumsim-meokgo] getAnonymousKey returned:', result);
+          console.warn('[jumsim-mukgo] getAnonymousKey returned:', result);
         }
         setState({ key: null, loading: false });
       } catch (e) {
-        console.warn('[jumsim-meokgo] getAnonymousKey threw:', e);
+        console.warn('[jumsim-mukgo] getAnonymousKey threw:', e);
         if (!cancelled) setState({ key: null, loading: false });
       }
     })();

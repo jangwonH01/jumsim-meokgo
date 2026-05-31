@@ -13,7 +13,7 @@ export default function HomeScreen() {
   const { key: anonymousKey } = useAnonymousKey();
   useEffect(() => {
     if (anonymousKey) {
-      console.log('[jumsim-meokgo] anonymousKey acquired:', anonymousKey);
+      console.log('[jumsim-mukgo] anonymousKey acquired:', anonymousKey);
     }
   }, [anonymousKey]);
 

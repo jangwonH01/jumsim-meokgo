@@ -8,6 +8,7 @@ const RouletteScreen = lazy(() => import('./screens/RouletteScreen'));
 const NearbyScreen = lazy(() => import('./screens/NearbyScreen'));
 const VoteCreateScreen = lazy(() => import('./screens/VoteCreateScreen'));
 const VoteSessionScreen = lazy(() => import('./screens/VoteSessionScreen'));
+const VoteResultScreen = lazy(() => import('./screens/VoteResultScreen'));
 
 function ScreenFallback() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/nearby" element={<NearbyScreen />} />
         <Route path="/vote" element={<VoteCreateScreen />} />
         <Route path="/vote/:sessionId" element={<VoteSessionScreen />} />
+        <Route path="/vote/:sessionId/result" element={<VoteResultScreen />} />
       </Routes>
     </Suspense>
   );

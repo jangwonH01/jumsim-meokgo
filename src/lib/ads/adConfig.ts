@@ -10,9 +10,9 @@
  * 테스트 ID: 배너 ait-ad-test-banner-id
  */
 
-export const USING_TEST_ADS = true;
+export const USING_TEST_ADS = false;
 
 export const AD = {
-  /** 홈·결과 화면 하단 배너 */
-  banner: USING_TEST_ADS ? 'ait-ad-test-banner-id' : 'ait.v2.live.REPLACE_ME',
+  /** 홈·룰렛·투표결과 화면 하단 배너 (실제 광고 그룹) */
+  banner: 'ait.v2.live.5cd2649f39114749',
 } as const;

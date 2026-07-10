@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { addToShortlist, isInShortlist } from '../lib/shortlist';
 import { useShortlist } from '../lib/useShortlist';
+import { BannerAd } from '../lib/ads/BannerAd';
+import { AD } from '../lib/ads/adConfig';
 
 const DEFAULTS = [
   '김치찌개',
@@ -231,6 +233,8 @@ export default function RouletteScreen() {
           기본 리스트로 초기화
         </Button>
       </div>
+
+      <div className="ad-slot"><BannerAd adGroupId={AD.banner} /></div>
     </main>
   );
 }

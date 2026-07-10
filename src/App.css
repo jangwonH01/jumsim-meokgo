@@ -735,3 +735,9 @@
   background: var(--brand, #63B3ED);
   color: #fff;
 }
+
+/* 인앱 배너 광고 자리 */
+.ad-slot {
+  width: 100%;
+  margin: 20px 0 8px;
+}

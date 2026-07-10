@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { clearShortlist, removeFromShortlist } from '../lib/shortlist';
 import { useAnonymousKey } from '../lib/useAnonymousKey';
 import { useShortlist } from '../lib/useShortlist';
+import { BannerAd } from '../lib/ads/BannerAd';
+import { AD } from '../lib/ads/adConfig';
 
 export default function HomeScreen() {
   const nav = useNavigate();
@@ -129,6 +131,8 @@ export default function HomeScreen() {
           </div>
         )}
       </div>
+
+      <div className="ad-slot"><BannerAd adGroupId={AD.banner} /></div>
     </main>
   );
 }

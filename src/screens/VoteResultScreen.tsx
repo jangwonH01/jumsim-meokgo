@@ -13,6 +13,8 @@ import {
 import { getCurrentCoords } from '../lib/location';
 import { buildAppShareLink, shareMessage } from '../lib/share';
 import type { VoteDoc, VoteMethod } from '../lib/voteEngine';
+import { BannerAd } from '../lib/ads/BannerAd';
+import { AD } from '../lib/ads/adConfig';
 
 /**
  * v1.1 결과 확정 화면.
@@ -419,6 +421,8 @@ export default function VoteResultScreen() {
           🏠 홈으로 (다시 정하기)
         </Button>
       </div>
+
+      <div className="ad-slot"><BannerAd adGroupId={AD.banner} /></div>
     </main>
   );
 }
